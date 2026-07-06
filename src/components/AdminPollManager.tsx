@@ -64,6 +64,14 @@ export function AdminPollManager({ user, onSignOut }: AdminPollManagerProps) {
           createdAt: Date.now()
         };
         await setDoc(profileRef, newProfile);
+        // Create initial default poll
+        await addDoc(collection(db, 'polls'), {
+          title: 'Mi Primera Sesión',
+          createdAt: Date.now(),
+          status: 'active',
+          showQR: true,
+          creatorId: user.uid
+        });
         setProfile(newProfile);
       }
     });
