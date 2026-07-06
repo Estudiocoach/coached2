@@ -60,7 +60,7 @@ export function AdminPollManager({ user, onSignOut }: AdminPollManagerProps) {
           id: user.uid,
           email: user.email || '',
           displayName: user.displayName || '',
-          role: 'admin',
+          role: user.email === 'administracion@estudiocoach.com' ? 'admin' : 'editor',
           createdAt: Date.now()
         };
         await setDoc(profileRef, newProfile);

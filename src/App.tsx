@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { AdminPollManager } from './components/AdminPollManager';
 import { ParticipantView } from './components/ParticipantView';
 import { LoadingScreen } from './components/LoadingScreen';
+import { LoginModal } from './components/LoginModal';
 import { auth } from './lib/firebase';
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User, signOut } from 'firebase/auth';
+import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, LayoutDashboard, UserCircle, LogOut } from 'lucide-react';
 
@@ -13,6 +14,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdminInitializing, setIsAdminInitializing] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -39,16 +41,6 @@ export default function App() {
     }
   }, [mode, user]);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      setMode('admin');
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
-  };
-
   const handleSignOut = () => {
     signOut(auth);
     setMode('selection');
@@ -62,11 +54,7 @@ export default function App() {
     );
   }
 
-  if (mode === 'admin') {
-    if (!user) {
-      handleGoogleSignIn();
-      return null;
-    }
+  if (mode === 'admin' && user) {
     if (isAdminInitializing) return <LoadingScreen />;
     return <AdminPollManager user={user} onSignOut={handleSignOut} />;
   }
@@ -77,6 +65,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onSuccess={() => { setIsLoginModalOpen(false); setMode('admin'); }}
+      />
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-8">
           <motion.div 
@@ -115,10 +108,7 @@ export default function App() {
           
           <div className="space-y-4">
             <button 
-              onClick={() => {
-                if (user) setMode('admin');
-                else handleGoogleSignIn();
-              }}
+              onClick={() => setIsLoginModalOpen(true)}
               className="w-full p-6 bg-white border border-slate-200 hover:border-indigo-600 hover:bg-slate-50 rounded-xl transition-all group text-left flex items-center gap-5 shadow-sm"
             >
               <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
