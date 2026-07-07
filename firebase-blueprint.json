@@ -31,27 +31,12 @@
       "properties": {
         "pollId": { "type": "string" },
         "questionId": { "type": "string" },
-        "sessionId": { "type": "string" },
         "text": { "type": "string" },
         "value": { "type": "string" },
         "participantName": { "type": "string" },
         "createdAt": { "type": "number" }
       },
-      "required": ["pollId", "questionId", "participantName", "createdAt", "sessionId"]
-    },
-    "ParticipantSession": {
-      "title": "ParticipantSession",
-      "description": "A unique session code for a participant",
-      "type": "object",
-      "properties": {
-        "pollId": { "type": "string" },
-        "code": { "type": "string" },
-        "isUsed": { "type": "boolean" },
-        "participantName": { "type": "string" },
-        "usedAt": { "type": "number" },
-        "createdAt": { "type": "number" }
-      },
-      "required": ["pollId", "code", "isUsed", "createdAt"]
+      "required": ["pollId", "questionId", "participantName", "createdAt"]
     }
   },
   "firestore": {
@@ -66,10 +51,6 @@
     "/polls/{pollId}/responses/{responseId}": {
       "schema": "Response",
       "description": "Subcollection of responses for a specific poll"
-    },
-    "/polls/{pollId}/sessions/{sessionId}": {
-      "schema": "ParticipantSession",
-      "description": "Subcollection of unique participant sessions"
     }
   }
 }
